@@ -1,10 +1,13 @@
 from typing import Callable
 
 
-# TODO: HOOKS ARE BROKEN
-# SUBSCRIBED IS SHARED BY DEFAULT
+class _HookMeta(type):
+    def __new__(cls, name, bases, namespace):
+        namespace['subscribed'] = []
+        return super().__new__(cls, name, bases, namespace)
 
-class Hook:
+
+class Hook(metaclass=_HookMeta):
     """
 
     hooks are the thing that runs functions in a mod
@@ -15,7 +18,6 @@ class Hook:
     so it should look something like
 
     class my_hook(Hook):
-        subscribed: list[Callable] = []
         @classmethod
         def dependency(cls):
             if something.old != something.new:
