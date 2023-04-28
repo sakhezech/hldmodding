@@ -1,0 +1,14 @@
+[project]
+name = 'hldmodding' # subject to change
+version = '0.0.0'
+authors = [
+	{ name = 'Sakhezech', email = 'contact@sakhezech.ru' },
+]
+description = 'Python modding/manipulation framework for Hyper Light Drifter'
+readme = 'README.md'
+requires-python = '>=3.10'
+classifiers = []
+
+[build-system]
+requires = ['hatchling']
+build-backend = 'hatchling.build'
