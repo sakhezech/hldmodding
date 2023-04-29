@@ -7,6 +7,8 @@ class _HookMeta(type):
         return super().__new__(cls, name, bases, namespace)
 
 
+# TODO: RENAME DEPENDENCY TO SOMETHING ELSE
+# OR TURN IT INTO DEPENDENCY ARRAY LIKE IN REACT
 class Hook(metaclass=_HookMeta):
     """
 
