@@ -1,10 +1,20 @@
 import ctypes as c
 import ctypes.wintypes as w
 from typing import Type, Any
-from platform import system
 
 
-class MemoryControllerWindows:
+class MemoryController:
+
+    base_addr = c.c_int(0)
+
+    def read_from_addr(self, addr: int, c_type: Type) -> Any:
+        raise NotImplementedError
+
+    def write_to_addr(self, addr: int, value: Any) -> None:
+        raise NotImplementedError
+
+
+class MemoryControllerWindows(MemoryController):
     _user32 = None
     _kernel32 = None
     _hProcess = None
@@ -51,20 +61,8 @@ class MemoryControllerWindows:
         )
 
 
-class MemoryController:
-    _systems = {
-        'Windows': MemoryControllerWindows
+def getMemoryController(controller_type: str) -> MemoryController:
+    controllers = {
+        'Windows': MemoryControllerWindows,
     }
-
-    base_addr = c.c_int(0)
-
-    def __new__(cls):
-        controller = super().__new__(cls._systems[system()])
-        controller.__init__()
-        return controller
-
-    def read_from_addr(self, addr: int, c_type: Type) -> Any:
-        raise NotImplementedError
-
-    def write_to_addr(self, addr: int, value: Any) -> None:
-        raise NotImplementedError
+    return controllers[controller_type]()
