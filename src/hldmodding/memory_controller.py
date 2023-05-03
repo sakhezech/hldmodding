@@ -15,16 +15,17 @@ class MemoryController:
 
 
 class MemoryControllerWindows(MemoryController):
-    _user32 = None
-    _kernel32 = None
-    _hProcess = None
-    _hWindow = None
-    _pID = None
+    # _user32 = None
+    # _kernel32 = None
+    # _hProcess = None
+    # _hWindow = None
+    # _pID = None
     base_addr = c.c_int(0)
 
     def __init__(self):
-        self._user32: c.WinDLL = c.WinDLL('User32.dll')
-        self._kernel32: c.WinDLL = c.WinDLL('Kernel32.dll')
+        self._user32 = c.WinDLL('User32.dll')  # type: ignore
+        self._kernel32 = c.WinDLL('Kernel32.dll')  # type: ignore
+        self._psapi = c.WinDLL('Psapi.dll')  # type: ignore
 
         self._hWindow = self._user32.FindWindowW(None, 'Hyper Light Drifter')
         self._pID = c.c_int()
@@ -43,6 +44,12 @@ class MemoryControllerWindows(MemoryController):
         )
         self.base_addr = modules[0]
 
+        module_info = (c.c_ulong * 3)(0)
+        self._psapi.GetModuleInformation(
+            self._hProcess, self.base_addr, c.pointer(module_info)
+        )
+        self.end_addr = module_info[2]
+
     # TODO: MAYBE MAKE c_type DEFAULT TO c.c_double
     # BECAUSE ALMOST EVERY VALUE IN THE GAME IS A DOUBLE
     # WITH NOTABLE EXCEPTION BEING ROOMID WHICH IS c.c_int
@@ -59,6 +66,9 @@ class MemoryControllerWindows(MemoryController):
         self._kernel32.WriteProcessMemory(
             self._hProcess, addr, c.pointer(value), c.sizeof(value), None
         )
+
+    def sig_scan(self, byte_array: bytes | str, mask: str | None):
+        raise NotImplementedError
 
 
 def getMemoryController(controller_type: str) -> MemoryController:
