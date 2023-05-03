@@ -13,15 +13,14 @@ class MemoryController:
     def write_to_addr(self, addr: int, value: Any) -> None:
         raise NotImplementedError
 
+    def resolve_pointer(self, addr: int, offsets: list[int]) -> int:
+        raise NotImplementedError
+
+    def sig_scan(self, byte_array: bytes | str, mask: str | None) -> int:
+        raise NotImplementedError
+
 
 class MemoryControllerWindows(MemoryController):
-    # _user32 = None
-    # _kernel32 = None
-    # _hProcess = None
-    # _hWindow = None
-    # _pID = None
-    base_addr = c.c_int(0)
-
     def __init__(self):
         self._user32 = c.WinDLL('User32.dll')  # type: ignore
         self._kernel32 = c.WinDLL('Kernel32.dll')  # type: ignore
@@ -48,7 +47,7 @@ class MemoryControllerWindows(MemoryController):
         self._psapi.GetModuleInformation(
             self._hProcess, self.base_addr, c.pointer(module_info)
         )
-        self.end_addr = module_info[2]
+        self._end_addr = module_info[2]
 
     # TODO: MAYBE MAKE c_type DEFAULT TO c.c_double
     # BECAUSE ALMOST EVERY VALUE IN THE GAME IS A DOUBLE
@@ -67,7 +66,10 @@ class MemoryControllerWindows(MemoryController):
             self._hProcess, addr, c.pointer(value), c.sizeof(value), None
         )
 
-    def sig_scan(self, byte_array: bytes | str, mask: str | None):
+    def resolve_pointer(self, addr: int, offsets: list[int]) -> int:
+        raise NotImplementedError
+
+    def sig_scan(self, byte_array: bytes | str, mask: str | None) -> int:
         raise NotImplementedError
 
 
