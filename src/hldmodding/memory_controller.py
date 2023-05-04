@@ -1,6 +1,7 @@
 import ctypes as c
 import ctypes.wintypes as w
 from typing import Type, Any
+from platform import system
 
 
 class MemoryController:
@@ -73,7 +74,10 @@ class MemoryControllerWindows(MemoryController):
         raise NotImplementedError
 
 
-def getMemoryController(controller_type: str) -> MemoryController:
+def getMemoryController(controller_type: str | None = None) -> MemoryController:
+    if controller_type is None:
+        controller_type = system()
+
     controllers = {
         'Windows': MemoryControllerWindows,
     }
