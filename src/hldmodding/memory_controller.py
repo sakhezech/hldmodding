@@ -72,7 +72,6 @@ class MemoryControllerWindows(MemoryController):
         last_offset = offsets.pop()
         for offset in offsets:
             addr = (self.read_from_addr(addr + offset, c.c_long)).value
-            print(addr)
         return addr + last_offset
 
     def sig_scan(self, byte_array: bytes | str, mask: str | None) -> int:
