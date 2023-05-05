@@ -6,10 +6,23 @@ class _HookMeta(type):
         namespace['subscribed'] = []
         return super().__new__(cls, name, bases, namespace)
 
+class _BaseHook(metaclass=_HookMeta):
+
+    subscribed: list[Callable] = []
+
+    @classmethod
+    def sub(cls, func: Callable) -> Callable:
+        cls.subscribed.append(func)
+        return func
+
+    @classmethod
+    def fire(cls) -> None:
+        for func in cls.subscribed:
+            func()
 
 # TODO: RENAME DEPENDENCY TO SOMETHING ELSE
 # OR TURN IT INTO DEPENDENCY ARRAY LIKE IN REACT
-class Hook(metaclass=_HookMeta):
+class Hook(_BaseHook):
     """
 
     hooks are the thing that runs functions in a mod
@@ -32,18 +45,15 @@ class Hook(metaclass=_HookMeta):
         print('Hiii hello hi')
 
     """
-    subscribed: list[Callable] = []
-
-    @classmethod
-    def sub(cls, func: Callable) -> Callable:
-        cls.subscribed.append(func)
-        return func
-
-    @classmethod
-    def fire(cls) -> None:
-        for func in cls.subscribed:
-            func()
-
     @classmethod
     def dependency(cls) -> None:
         raise NotImplementedError('No hook dependency implemented!')
+
+class Patch(_BaseHook):
+    """
+
+    patch hooks are hooks that are run before running the game
+    so things like changing levels and patching new textures in go here
+    
+    """
+    pass
