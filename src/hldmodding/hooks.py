@@ -1,12 +1,13 @@
 from typing import Callable
 
 
-class _HookMeta(type):
+class _SubscriberMeta(type):
     def __new__(cls, name, bases, namespace):
         namespace['subscribed'] = []
         return super().__new__(cls, name, bases, namespace)
 
-class _BaseHook(metaclass=_HookMeta):
+
+class _Subscriber(metaclass=_SubscriberMeta):
 
     subscribed: list[Callable] = []
 
@@ -20,9 +21,10 @@ class _BaseHook(metaclass=_HookMeta):
         for func in cls.subscribed:
             func()
 
+
 # TODO: RENAME DEPENDENCY TO SOMETHING ELSE
 # OR TURN IT INTO DEPENDENCY ARRAY LIKE IN REACT
-class Hook(_BaseHook):
+class Hook(_Subscriber):
     """
 
     hooks are the thing that runs functions in a mod
@@ -45,15 +47,18 @@ class Hook(_BaseHook):
         print('Hiii hello hi')
 
     """
+
     @classmethod
     def dependency(cls) -> None:
         raise NotImplementedError('No hook dependency implemented!')
 
-class Patch(_BaseHook):
+
+class Patch(_Subscriber):
     """
 
     patch hooks are hooks that are run before running the game
     so things like changing levels and patching new textures in go here
-    
+
     """
+
     pass
