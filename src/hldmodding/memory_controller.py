@@ -6,7 +6,7 @@ from platform import system
 
 class MemoryController:
 
-    base_addr = c.c_int(0)
+    base_addr = 0
 
     def read_from_addr(self, addr: int, c_type: Type) -> Any:
         raise NotImplementedError
@@ -53,6 +53,8 @@ class MemoryControllerWindows(MemoryController):
     # TODO: MAYBE MAKE c_type DEFAULT TO c.c_double
     # BECAUSE ALMOST EVERY VALUE IN THE GAME IS A DOUBLE
     # WITH NOTABLE EXCEPTION BEING ROOMID WHICH IS c.c_int
+    # NOTE: YOU ARE GETTING THE C_TYPE BACK SO .VALUE IT
+    # TODO: MAYBE MAKE IT .VALUE BY DEFAULT UNLESS NEEDED
     def read_from_addr(self, addr: int, c_type: Type) -> Any:
         output = c_type()
         self._kernel32.ReadProcessMemory(
