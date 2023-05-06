@@ -80,6 +80,7 @@ class MemoryControllerWindows(MemoryController):
         raise NotImplementedError
 
 
+# TODO: MAKE MEMORY CONTROLLERS SINGLETONS
 def getMemoryController(controller_type: str | None = None) -> MemoryController:
     if controller_type is None:
         controller_type = system()
