@@ -17,9 +17,9 @@ class _Subscriber(metaclass=_SubscriberMeta):
         return func
 
     @classmethod
-    def fire(cls) -> None:
+    def fire(cls, *args, **kwargs) -> None:
         for func in cls.subscribed:
-            func()
+            func(*args, **kwargs)
 
 
 # TODO: RENAME DEPENDENCY TO SOMETHING ELSE
@@ -53,6 +53,8 @@ class Hook(_Subscriber):
         raise NotImplementedError('No hook dependency implemented!')
 
 
+# HOOKS SHOULD BE ABLE TO CREATE CUSTOM HOOKS FOR YOUR NEEDS
+# BUT PATCHES SHOULD NOT BE
 class Patch(_Subscriber):
     """
 

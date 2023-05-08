@@ -1,2 +1,2 @@
-from hldmodding.hooks import Hook, Patch
+from hldmodding.hooks import Hook
 from hldmodding.memory_controller import getMemoryController

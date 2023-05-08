@@ -1,4 +1,4 @@
-from hldmodding.hooks import Hook
+from hldmodding.hooks import Hook, Patch
 from hldmodding.mini_controllers import MiniController
 import ctypes as c
 
@@ -22,3 +22,17 @@ class on:
             def dependency(cls) -> None:
                 if controller.room_id.old != controller.room_id.new:
                     cls.fire()
+
+    class patch:
+        
+        class pre(Patch):
+            pass
+        
+        class post(Patch):
+            pass
+        
+        class levels(Patch):
+            pass
+        
+        class textures(Patch):
+            pass
