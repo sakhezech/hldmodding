@@ -6,6 +6,7 @@ from platform import system
 
 class MemoryController:
 
+    _initialized_controller: Any = None
     base_addr = 0
 
     def read_from_addr(self, addr: int, c_type: Type) -> Any:
@@ -80,12 +81,17 @@ class MemoryControllerWindows(MemoryController):
         raise NotImplementedError
 
 
-# TODO: MAKE MEMORY CONTROLLERS SINGLETONS
 def getMemoryController(controller_type: str | None = None) -> MemoryController:
+
+    if MemoryController._initialized_controller:
+        return MemoryController._initialized_controller
+
     if controller_type is None:
         controller_type = system()
 
     controllers = {
         'Windows': MemoryControllerWindows,
     }
-    return controllers[controller_type]()
+    controller_to_return = controllers[controller_type]()
+    MemoryController._initialized_controller = controller_to_return
+    return controller_to_return
