@@ -1,3 +1,5 @@
+from typing import Callable, Any
+from hldlib import HLDHolder
 from hldmodding.hooks import Hook, Patch
 from hldmodding.mini_controllers import MiniController
 import ctypes as c
@@ -32,7 +34,13 @@ class on:
             pass
         
         class levels(Patch):
-            pass
+            @classmethod
+            def fire(cls, levels: HLDHolder) -> None:
+                return super().fire(levels)
+
+            @classmethod
+            def sub(cls, func: Callable[[HLDHolder], Any]) -> Callable[[HLDHolder], Any]:
+                return super().sub(func)
         
         class textures(Patch):
             pass
