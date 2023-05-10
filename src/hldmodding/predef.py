@@ -35,12 +35,14 @@ class on:
         
         class levels(Patch):
             @classmethod
-            def fire(cls, levels: HLDLevelList) -> None:
-                return super().fire(levels)
+            def sub(cls, func: Callable[[HLDLevelList], Any]) -> Callable[[HLDLevelList], Any]:
+                cls.subscribed.append(func)
+                return func
 
             @classmethod
-            def sub(cls, func: Callable[[HLDLevelList], Any]) -> Callable[[HLDLevelList], Any]:
-                return super().sub(func)
+            def fire(cls, levels: HLDLevelList, *args, **kwargs) -> None:
+                for func in cls.subscribed:
+                    func(levels, *args, **kwargs)
         
         class textures(Patch):
             pass

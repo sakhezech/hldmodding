@@ -1,4 +1,5 @@
-from typing import Callable
+from typing import Callable, Any
+from pathlib import Path
 
 
 class _SubscriberMeta(type):
@@ -62,5 +63,13 @@ class Patch(_Subscriber):
     so things like changing levels and patching new textures in go here
 
     """
+    
+    @classmethod
+    def sub(cls, func: Callable[[str | Path], Any]) -> Callable[[str | Path], Any]:
+        cls.subscribed.append(func)
+        return func
 
-    pass
+    @classmethod
+    def fire(cls, path: str | Path, *args, **kwargs) -> None:
+        for func in cls.subscribed:
+            func(path, *args, **kwargs)
