@@ -2,16 +2,16 @@ from typing import Callable, Any
 from hldlib import HLDLevelList
 from hldmodding.hooks import Hook, Patch
 from hldmodding.mini_controllers import MiniController
+from hldmodding.memory_controller import MemoryController
 import ctypes as c
 
 # MINI CONTROLLERS
 # TODO: RENAME THIS
 class controller:
     # TODO: WORKS FOR 7-21-2017 CHANGE TO SIG SCAN WHEN ITS READY
-    room_id = MiniController(
-        lambda x: x.resolve_pointer(x.base_addr + 0x255B1F10, []),
-        c.c_int
-    )
+    class room_id(MiniController):
+        addr = lambda x: x.resolve_pointer(x.base_addr + 0x255B1F10, [])
+        c_type = c.c_int
 
 
 # HOOKS

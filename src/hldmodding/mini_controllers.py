@@ -1,44 +1,43 @@
-# TODO: THIS
-# THESE ARE MEANT TO CONTROL ONE ADDR
-# NAME SUBJECT TO CHANGE
-# MINI CONTROLLERS MUST NOT BE INITTED ON LOAD
-# OLD / NEW AND MORE IF NEEDED
-# ADDR AND ADDR CHANGE
-
 from hldmodding.memory_controller import getMemoryController, MemoryController
-from typing import Type, Callable, Any
+from typing import Callable, Any
+import ctypes as c
 
 
-class MiniController:
+class _MiniControllerMeta(type):
+    def __new__(cls, name, bases, namespace):
+        namespace['addr'] = 0
+        namespace['c_type'] = c.c_int
+        namespace['old'] = None
+        namespace['new'] = None
+        return super().__new__(cls, name, bases, namespace)
 
-    def __init__(self, addr: int | Callable[[MemoryController], int], c_type: Type) -> None:
 
-        if callable(addr):
-            self.addr = 0
-            self._callable_addr = addr
-        else:
-            self.addr = addr
-            self._callable_addr = None
+class MiniController(metaclass=_MiniControllerMeta):
 
-        self.c_type = c_type
-        self.old = None
-        self.new = None
+    addr: int | Callable[[MemoryController], int] = 0
+    c_type = c.c_int
+    old: Any = None
+    new: Any = None
     
     # TODO: IF WE .VALUE THIS THEN WE CAN'T WORK WITH COMPLEX THINGS
     # IF I DON'T: WE HAVE TO .VALUE MANUALLY EVERY TIME
     # AND WE CAN'T DO self.old = None
     # NOTE: MAYBE CHECK c_type AND .VALUE THE RESULT ACCORDINGLY
-    def read(self) -> Any:
-        return self._mc.read_from_addr(self.addr, self.c_type).value
+    @classmethod
+    def read(cls) -> Any:
+        return cls._mc.read_from_addr(cls.addr, cls.c_type)
 
-    def write(self, value: Any) -> None:
-        self._mc.write_to_addr(self.addr, self.c_type(value))
+    @classmethod
+    def write(cls, value: Any) -> None:
+        cls._mc.write_to_addr(cls.addr, cls.c_type(value))
     
-    def update(self) -> None:
-        self.old = self.new
-        self.new = self.read()
-        
-    def init_mc(self) -> None:
-        self._mc = getMemoryController()
-        if self._callable_addr:
-            self.addr: int = self._callable_addr(self._mc)
+    @classmethod
+    def update(cls) -> None:
+        cls.old = cls.new
+        cls.new = cls.read().value
+    
+    @classmethod
+    def init(cls) -> None:
+        cls._mc = getMemoryController()
+        if callable(cls.addr):
+            cls.addr = cls.addr(cls._mc)
