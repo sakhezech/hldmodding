@@ -5,8 +5,6 @@ import ctypes as c
 
 class _MiniControllerMeta(type):
     def __new__(cls, name, bases, namespace):
-        namespace['addr'] = 0
-        namespace['c_type'] = c.c_int
         namespace['old'] = None
         namespace['new'] = None
         return super().__new__(cls, name, bases, namespace)
