@@ -11,9 +11,10 @@ def run():
     # patches
     on.patch.pre.fire(path_to_hld)
 
-    levels = default_load(path_to_hld)
-    on.patch.levels.fire(levels)
-    levels.dump_all(path_to_hld)
+    if on.patch.levels.subscribed:
+        levels = default_load(path_to_hld)
+        on.patch.levels.fire(levels)
+        levels.dump_all(path_to_hld)
 
     on.patch.textures.fire(path_to_hld)
 
