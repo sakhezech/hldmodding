@@ -1,4 +1,4 @@
-from hldmodding.predef import on
+from hldmodding import on
 from hldlib import HLDLevelList, HLDObj
 import re
 
