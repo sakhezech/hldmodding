@@ -2,7 +2,6 @@ from typing import Callable, Any
 from hldlib import HLDLevelList
 from hldmodding.hooks import Hook, Patch
 from hldmodding.mini_controllers import MiniController
-from hldmodding.memory_controller import MemoryController
 import ctypes as c
 
 # MINI CONTROLLERS
@@ -36,12 +35,12 @@ class on:
         class levels(Patch):
             @classmethod
             def sub(cls, func: Callable[[HLDLevelList], Any]) -> Callable[[HLDLevelList], Any]:
-                cls.subscribed.append(func)
+                cls._pending.append(func)
                 return func
 
             @classmethod
             def fire(cls, levels: HLDLevelList, *args, **kwargs) -> None:
-                for func in cls.subscribed:
+                for func in cls._subscribed:
                     func(levels, *args, **kwargs)
         
         class textures(Patch):

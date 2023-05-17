@@ -4,22 +4,24 @@ from pathlib import Path
 
 class _SubscriberMeta(type):
     def __new__(cls, name, bases, namespace):
-        namespace['subscribed'] = []
+        namespace['_subscribed'] = []
+        namespace['_pending'] = []
         return super().__new__(cls, name, bases, namespace)
 
 
 class _Subscriber(metaclass=_SubscriberMeta):
 
-    subscribed: list[Callable] = []
+    _subscribed: list[Callable] = []
+    _pending: list[Callable] = []
 
     @classmethod
     def sub(cls, func: Callable) -> Callable:
-        cls.subscribed.append(func)
+        cls._pending.append(func)
         return func
 
     @classmethod
     def fire(cls, *args, **kwargs) -> None:
-        for func in cls.subscribed:
+        for func in cls._subscribed:
             func(*args, **kwargs)
 
 
@@ -66,10 +68,10 @@ class Patch(_Subscriber):
     
     @classmethod
     def sub(cls, func: Callable[[str | Path], Any]) -> Callable[[str | Path], Any]:
-        cls.subscribed.append(func)
+        cls._pending.append(func)
         return func
 
     @classmethod
     def fire(cls, path: str | Path, *args, **kwargs) -> None:
-        for func in cls.subscribed:
+        for func in cls._subscribed:
             func(path, *args, **kwargs)
