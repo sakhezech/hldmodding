@@ -2,6 +2,7 @@ from hldmodding.hooks import Hook, Patch
 from hldmodding.mini_controllers import MiniController
 from hldmodding.predef import on
 from hldlib import find_path, default_load
+from time import time, sleep
 
 
 def run():
@@ -39,8 +40,9 @@ def run():
     mini_controllers = [mini for mini in MiniController.__subclasses__()]
     for mini in mini_controllers: mini.init()
 
-    # start cycle 
-    # TODO: RATE LIMIT THE LOOP
+    # start cycle
+    st = time()
     while True:
         for mini in mini_controllers: mini.update()
         for hook in used_hooks: hook.dependency()
+        sleep(1/60 - ((time() - st) % 1/60))
